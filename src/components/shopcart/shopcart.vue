@@ -1,0 +1,106 @@
+<template>
+    <div class="shopcart">
+      <div class="content">
+        <div class="content-left">
+          <div class="logo-wrapper">
+            <div class="logo"><i class="icon-shopping_cart"></i></div>
+          </div>
+          <div class="price">￥{{deliveryPrice}}</div>
+          <div class="desc">另需配送费￥{{minPrice}}元</div>
+        </div>
+        <div class="content-right">
+          <div class="pay">￥{{minPrice}}元起送</div>
+        </div>
+      </div>
+    </div>
+</template>
+
+<style lang="stylus" rel="stylesheet/stylus">
+  .shopcart
+    position fixed
+    left 0
+    bottom 0
+    z-index 50
+    width 100%
+    height 48px
+    .content
+      display flex
+      color rgba(255,255,255,0.4)
+      background #141d27
+      .content-left
+        flex 1
+        font-size 0
+        .logo-wrapper
+          display inline-block
+          vertical-align: top
+          position relative
+          top -10px
+          margin 0 12px
+          padding 6px
+          width 56px
+          height 56px
+          box-sizing border-box
+          border-radius 50%
+          background #141d27  //注意,颜色没有继承，要重写，否则wrapper颜色不会出来
+          .logo
+            width 100%
+            height 100%
+            border-radius 50%
+            text-align center
+            background #2b343c
+            .icon-shopping_cart
+              line-height 44px
+              font-size 24px
+              color #80858a
+        .price
+          display inline-block
+          vertical-align top
+          line-height:24px
+          margin-top:12px
+          padding-right:12px
+          box-sizing:border-box
+          border-right:1px solid rgba(255,255,255,0.1)
+          font-size:16px
+          font-weight:700
+        .desc
+          display inline-block
+          vertical-align top
+          margin 12px 0 0 12px
+          line-height 24px
+          font-size 10px
+      .content-right
+        flex 0 0 105px
+        width 105px
+        .pay
+          height 48px
+          line-height 48px
+          text-align center
+          font-size 12px
+          font-weight:700
+
+</style>
+
+<script>
+
+    export default{
+        props:{
+          deliveryPrice:{
+              type:Number
+          },
+          minPrice:{
+              type:Number
+          }
+        },
+        data(){
+            return{
+                msg:'hello vue'
+            }
+        },
+        components:{
+        }
+    }
+</script>
+
+
+
+

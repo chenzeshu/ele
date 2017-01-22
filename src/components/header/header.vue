@@ -12,7 +12,10 @@
               <span class="description">{{seller.description}} / {{seller.deliveryTime}}分钟送达</span>
             </div>
             <div v-if="seller.supports" class="support">
-              <span class="icon" :class="classMap[seller.supports[0].type]"></span>
+              <!--<span class="icon" :class="classMap[seller.supports[0].type]"></span>-->
+              <div class="icon-wrapper">
+                <icon :icontype="seller.supports[0].type" :iconstyle="1"></icon>
+              </div>
               <span class="text">{{seller.supports[0].description}}</span>
             </div>
             <div v-if="seller.supports" class="support-count">
@@ -42,7 +45,10 @@
               </div>
               <ul v-if="seller.supports" class="supports">
                 <li v-for="(item,index) in seller.supports" class="support-item">
-                  <span :class="classMap[seller.supports[index].type]" class="icon"></span>
+                  <div class="icon-wrapper">
+                    <icon :icontype="seller.supports[index].type" :iconstyle="2"></icon>
+                  </div>
+                  <!--<span :class="classMap[seller.supports[index].type]" class="icon"></span>-->
                   <span class="text">{{seller.supports[index].description}}</span>
                 </li>
               </ul>
@@ -105,24 +111,9 @@
             height:12px
             line-height 12px
         .support
-          .icon
+          .icon-wrapper
             display inline-block
             vertical-align top
-            width 12px
-            height 12px
-            margin-right 4px
-            background-size 12px 12px
-            background-repeat no-repeat
-            &.decrease
-              bg-image('decrease_1')
-            &.discount
-              bg-image('discount_1')
-            &.guarantee
-              bg-image('guarantee_1')
-            &.invoice
-              bg-image('invoice_1')
-            &.special
-              bg-image('special_1')
           .text
             line-height 10px
             font-size 10px
@@ -219,29 +210,18 @@
               font-size 0
               &:last-child
                 margin-bottom 12px
-              .icon
+              .icon-wrapper
                 display inline-block
-                width 16px
-                height 16px
                 vertical-align top
-                margin-right 6px
-                background-size 16px 16px
+                width 12px
+                height 12px
+                margin-right 4px
+                background-size 12px 12px
                 background-repeat no-repeat
-                &.decrease
-                  bg-image('decrease_2')
-                &.discount
-                  bg-image('discount_2')
-                &.guarantee
-                  bg-image('guarantee_2')
-                &.invoice
-                  bg-image('invoice_2')
-                &.special
-                  bg-image('special_2')
               .text
                 display inline-block
                 line-height 12px
                 font-size 12px
-
           .bulletin
             width 80%
             margin 0 auto
@@ -266,6 +246,7 @@
 </style>
 
 <script>
+  import icon from '../icon/icon'
   import star from '../star/star'
   import title from '../title/title'
     export default{
@@ -293,7 +274,7 @@
         }
       },
         components:{
-            star,'v-title':title
+            star, 'v-title':title, icon
         }
     }
 </script>

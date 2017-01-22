@@ -12,7 +12,7 @@
         <router-link to="/seller">商家</router-link>
       </div>
     </div>
-    <router-view></router-view>
+    <router-view :seller="seller"></router-view>
   </div>
 </template>
 
@@ -47,6 +47,8 @@ export default {
       }
   },
   created() {
+    this.classMap = ['decrease','discount','guarantee','invoice','special']
+
     this.$http.get('/api/seller?id=' + this.seller.id).then((response) => {
       response = response.body;
       if (response.errno === ERR_OK) {
