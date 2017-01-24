@@ -33,6 +33,9 @@
                 <div class="price">
                   <span class="now"><span class="money">￥</span>{{food.price}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food"></cartcontrol>
+                </div>
               </div>
             </li>
           </ul>
@@ -98,10 +101,11 @@
         &:last-child
           border-none()
           margin-bottom 0
-        .icon
+        .icon //这里360的样式，content覆盖了icon
           flex 0 0 57px
           margin-right 10px
         .content
+          position relative
           flex 1
           .name
             margin 2px 0 8px 0
@@ -133,7 +137,10 @@
               color rgb(147,153,159)
               font-size 10px
               text-decoration line-through
-
+          .cartcontrol-wrapper
+            position absolute
+            right 18px
+            bottom 18px
 </style>
 
 <script>
@@ -142,6 +149,7 @@
   //引入组件
   import icon from '../icon/icon'
   import shopcart from '../shopcart/shopcart'
+  import cartcontrol from '../cartcontrol/cartcontrol'
   const  ERR_OK = 0
   const  cc = console.log
     export default{
@@ -150,7 +158,6 @@
               goods:[],
               listHeight:[],
               scrollY:0
-
               /**
                * 页面生成->取得数据->得到fooditems的各个区间->BS暴露实时position->得到实时scrollY
                * ->通过scrollY映射区间->得到currentIndex->对应menu高亮
@@ -227,7 +234,7 @@
           }
         },
         components:{
-            icon,shopcart
+            icon,shopcart,cartcontrol
         }
     }
 </script>
