@@ -1,6 +1,7 @@
 <template>
     <div class="header">
-        <div class="content-wrapper" @click="showDetail">
+        <!--<div class="content-wrapper" @click="showDetail">-->
+        <div class="content-wrapper" @click="showDesc">
           <div class="avatar">
             <img :src="seller.avatar" width="64" height="64">
           </div>
@@ -24,7 +25,8 @@
             </div>
           </div>
         </div>
-        <div class="bulletin-wrapper" @click="showDetail">
+        <!--<div class="bulletin-wrapper" @click="showDetail">-->
+        <div class="bulletin-wrapper" @click="showDesc">
           <span class="icon"></span><span class="text">{{seller.bulletin}}</span>
           <i class="icon-keyboard_arrow_right"></i>
         </div>
@@ -33,7 +35,7 @@
       </div>
       <transition name="fade">
         <div class="detail" v-show="detailShow"
-           @click="hideDetail">
+           @click="showDesc">
           <div class="detail-wrapper clear-fix">
             <div class="detail-main">
               <h1 class="name">{{seller.name}}</h1>
@@ -246,33 +248,43 @@
 </style>
 
 <script>
+  import {mapGetters,mapActions} from 'vuex'
   import icon from '../icon/icon'
   import star from '../star/star'
   import title from '../title/title'
     export default{
-        props:{
-            seller:{
-                type:Object
-            }
-        },
-      data(){
-            return {
-              detailShow:false,
-              titleOne:"优惠信息",
-              titleTwo:"商家公告"
-            }
-      },
-        created(){
-          this.classMap = ['decrease','discount','guarantee','invoice','special']
-        },
-      methods:{
-        showDetail(){
-            this.detailShow = !this.detailShow
-        },
-        hideDetail(){
-            this.detailShow = false
+      props: {
+        seller: {
+          type: Object
         }
       },
+      data(){
+        return {
+//              detailShow:false,
+          titleOne: "优惠信息",
+          titleTwo: "商家公告"
+        }
+      },
+      created(){
+        this.classMap = ['decrease', 'discount', 'guarantee', 'invoice', 'special']
+      },
+      computed: {
+        ...mapGetters({
+          detailShow: 'showDesc'
+        })
+      },
+      methods: {
+        ...mapActions([
+          'showDesc'
+        ]),
+      },
+//        showDetail(){
+//            this.detailShow = !this.detailShow
+//        },
+//        hideDetail(){
+//            this.detailShow = false
+//        }
+//      ,
         components:{
             star, 'v-title':title, icon
         }

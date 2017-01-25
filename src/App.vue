@@ -49,12 +49,13 @@ export default {
   created() {
     this.classMap = ['decrease','discount','guarantee','invoice','special']
 
-    this.$http.get('/api/seller?id=' + this.seller.id).then((response) => {
+    this.$http.get('/api/seller').then((response) => {
       response = response.body;
       if (response.errno === ERR_OK) {
         this.seller = Object.assign({}, this.seller, response.data);
       }
     });
+
   },
   components: {
     'v-header':header

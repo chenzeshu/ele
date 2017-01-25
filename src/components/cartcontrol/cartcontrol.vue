@@ -1,11 +1,11 @@
 <template>
     <div class="cartcontrol">
       <div class="cart-decrease" v-show="food.count>0"
-      @click="decreaseCart($event)">
+      @click="decreaseCart(food,$event)">
         <span class="inner icon-remove_circle_outline"></span>
       </div>
       <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
-      <div class="cart-add" @click="addCart($event)">
+      <div class="cart-add" @click="addCart(food,$event)">
         <span class="inner icon-add_circle"></span>
       </div>
     </div>
@@ -31,7 +31,7 @@
 </style>
 
 <script>
-  import {set} from 'vue'
+import Vue from 'vue'
     export default {
         props:{
           food:{
@@ -39,24 +39,26 @@
           }
         },
         methods:{
-           addCart(event){
+           addCart(food,event){
                if (!event._constructed){
                    return;
                }
-            if (!this.food.count){
-              vue.set(this.food, count,1)
-            }else{
-                this.food.count++
-            }
-            this.$dispatch('cart.add',event.target)
+               if (!this.food.count){
+                 Vue.set(this.food, 'count',1)//子组件不能影响父组件，但是set()可以
+               }else{
+                  this.food.count++
+               }
+               this.$store.dispatch('addSelectFoods',{food})
+//            this.$store.dispatch('addCart',event.target) //试试这里换成本来的this.$dispatch()会有什么效果
            },
-          decreaseCart(event){
+          decreaseCart(food,event){
             if (!event._constructed){
               return;
             }
             if (this.food.count){
               this.food.count--
             }
+            this.$store.dispatch('decreaseSelectFoods',{food})
           }
         },
         data() {

@@ -5,7 +5,7 @@
         <li v-for="(item, index) in goods" class="menu-item"
             :class="{'active' : currentIndex === parseInt(index)}"
             @click="selectMenu(index,$event)">
-        <!--<li v-for="item in goods" class="menu-item">-->
+          <!--<li v-for="item in goods" class="menu-item">-->
           <span class="text border-1px">
             <div class="icon-wrapper" v-show="item.type>0">
               <icon :icontype="item.type" :iconstyle="3"></icon>
@@ -20,7 +20,7 @@
         <li v-for="item in goods" class="food-list food-list-hook">
           <h1 class="title">{{item.name}}</h1>
           <ul>
-            <li v-for="food in item.foods" class="food-item border-1px">
+            <li @click="selectFood(food,$event)" v-for="food in item.foods" class="food-item border-1px">
               <div class="icon">
                 <img :src="food.icon">
               </div>
@@ -144,6 +144,8 @@
 </style>
 
 <script>
+  //引入vuex
+  import {mapGetters,mapActions} from 'vuex'
   //引入JS库
   import BScroll from 'better-scroll'
   //引入组件
@@ -152,91 +154,103 @@
   import cartcontrol from '../cartcontrol/cartcontrol'
   const  ERR_OK = 0
   const  cc = console.log
-    export default{
-        data(){
-            return{
-              goods:[],
-              listHeight:[],
-              scrollY:0
-              /**
-               * 页面生成->取得数据->得到fooditems的各个区间->BS暴露实时position->得到实时scrollY
-               * ->通过scrollY映射区间->得到currentIndex->对应menu高亮
-               * 关键在于：BS暴露实时position是封装好的，节省了大量操作
-               * BS的监听滚动是原生实现实时得到position的功能。
-               */
-            }
-        },
-        props:{
-            seller:{
-                type:Object
-            }
-        },
-        created(){
-          this.$http.get('api/goods').then((res)=>{
-              res = res.body
-              if (res.errno === ERR_OK){
-                  this.goods = Object.assign({},this.goods,res.data)
-//                  cc(this.goods)
-                  this.$nextTick(()=>{
-                      this._initScroll()
-                      this._calculate()
-                  })
-              }
+  export default{
+    data(){
+      return{
+        goods:[],
+        listHeight:[],
+        scrollY:0
+        /**
+         * 页面生成->取得数据->得到fooditems的各个区间->BS暴露实时position->得到实时scrollY
+         * ->通过scrollY映射区间->得到currentIndex->对应menu高亮
+         * 关键在于：BS暴露实时position是封装好的，节省了大量操作
+         * BS的监听滚动是原生实现实时得到position的功能。
+         */
+      }
+    },
+    props:{
+      seller:{
+        type:Object
+      }
+    },
+    created(){
+      this.$http.get('/api/goods').then((res)=>{
+        res = res.body
+        if (res.errno === ERR_OK){
+          this.$store.state.goods = Object.assign({},res.data)
+          this.goods = this.$store.state.goods
+          this.$nextTick(()=>{
+            this._initScroll()
+            this._calculate()
           })
-        },
-        computed:{
-            currentIndex(){
-                for(let i = 0;i<this.listHeight.length;i++){
-                    let height1 = this.listHeight[i]
-                    let height2 = this.listHeight[i + 1]
-                  if (!height2 || (this.scrollY >= height1 && this.scrollY < height2) ){
-                      return i
-                  }
-                }
-                return 0
-            }
-        },
-        methods:{
-            selectMenu(index,event){
-                //todo 浏览器原生JS的事件，没有_constructed这个属性，为了阻止浏览器模式时的二次点击——
-                if (!event._constructed){
-                    return;
-                }
-                //todo 如此，只会通过BScroll的点击事件（既Vue的事件）
-                let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
-                let el =foodList[index];
-                this.foodsScroll.scrollToElement(el,300)
-
-            },
-          _initScroll(){
-              this.menuScroll = new BScroll(this.$refs.menuWrapper,{
-                  click:true
-              })
-
-              this.foodsScroll = new BScroll(this.$refs.foodsWrapper,{
-                  probeType:3  //检测实时滚动位置，会暴露出当前的position，可以用 on('scroll',cb(position){})来操作
-              })
-
-              this.foodsScroll.on('scroll',(position)=>{
-                  this.scrollY = Math.abs(Math.round(position.y))    //.abs()取绝对值  //拿到右侧的Y值，要实时，就要用计算属性
-              })
-          },
-          _calculate(){
-              let foodlist = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
-              let height = 0
-              this.listHeight.push(height)
-              for (let i = 0; i<foodlist.length;i++){
-                  let item = foodlist[i]
-                  height += item.clientHeight;
-                  this.listHeight.push(height);
-              }
-              //拿到右侧的Y值，然后和左侧做映射
-          }
-        },
-        components:{
-            icon,shopcart,cartcontrol
         }
+      })
+    },
+    computed:{
+      ...mapGetters({
+        selectFoods : 'selectFoods'
+      }),
+      currentIndex(){
+        for(let i = 0;i<this.listHeight.length;i++){
+          let height1 = this.listHeight[i]
+          let height2 = this.listHeight[i + 1]
+          if (!height2 || (this.scrollY >= height1 && this.scrollY < height2) ){
+            return i
+          }
+        }
+        return 0
+      },
+      //todo 这里放goods()，去掉data()中的goods，显式效果相同
+//            goods(){
+//                return  this.$store.state.goods
+//            }
+    },
+    methods:{
+      selectMenu(index,event){
+        //todo 浏览器原生JS的事件，没有_constructed这个属性，为了阻止浏览器模式时的二次点击——
+        if (!event._constructed){
+          return;
+        }
+        //todo 如此，只会通过BScroll的点击事件（既Vue的事件）
+        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let el =foodList[index];
+        this.foodsScroll.scrollToElement(el,300)
+      },
+      selectFood(food,event){
+        if (!event._constructed){
+          return
+        }
+      },
+      _initScroll(){
+        this.menuScroll = new BScroll(this.$refs.menuWrapper,{
+          click:true
+        })
+
+        this.foodsScroll = new BScroll(this.$refs.foodsWrapper,{
+          probeType:3,  //检测实时滚动位置，会暴露出当前的position，可以用 on('scroll',cb(position){})来操作
+          click:true
+        })
+
+        this.foodsScroll.on('scroll',(position)=>{
+          this.scrollY = Math.abs(Math.round(position.y))    //.abs()取绝对值  //拿到右侧的Y值，要实时，就要用计算属性
+        })
+      },
+      _calculate(){
+        let foodlist = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let height = 0
+        this.listHeight.push(height)
+        for (let i = 0; i<foodlist.length;i++){
+          let item = foodlist[i]
+          height += item.clientHeight;
+          this.listHeight.push(height);
+        }
+        //拿到右侧的Y值，然后和左侧做映射
+      }
+    },
+    components:{
+      icon,shopcart,cartcontrol
     }
+  }
 </script>
 
 

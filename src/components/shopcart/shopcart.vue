@@ -1,15 +1,22 @@
 <template>
-    <div class="shopcart">
+    <div class="shopcart" @click="test">
       <div class="content">
         <div class="content-left">
           <div class="logo-wrapper">
-            <div class="logo"><i class="icon-shopping_cart"></i></div>
+            <div class="logo" :class="{'highlight':totalPrice>0}">
+              <i class="icon-shopping_cart" :class="{'highlight':totalPrice>0}"></i>
+            </div>
+            <div class="num" v-show="totalCount">
+              {{totalCount}}
+            </div>
           </div>
-          <div class="price">￥{{deliveryPrice}}</div>
-          <div class="desc">另需配送费￥{{minPrice}}元</div>
+          <div class="price" :class="{'hignlight':totalPrice>0}">￥{{totalPrice}}</div>
+          <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
         </div>
         <div class="content-right">
-          <div class="pay">￥{{minPrice}}元起送</div>
+          <div class="pay" v-if="totalPrice<minPrice">还差￥{{minPrice - totalPrice}}元起送</div>
+          <div class="pay" v-if="totalPrice>minPrice"
+            :class="{'hignlight':totalPrice>minPrice}">去结算</div>
         </div>
       </div>
     </div>
@@ -48,10 +55,27 @@
             border-radius 50%
             text-align center
             background #2b343c
+            &.highlight
+              background rgb(0,160,220)
             .icon-shopping_cart
               line-height 44px
               font-size 24px
               color #80858a
+              &.highlight
+                color #fff
+          .num
+            position absolute
+            top 0
+            right 0
+            width 24px
+            height 16px
+            line-height 16px
+            text-align center
+            font-size 9px
+            font-weight 700
+            color #fff
+            border-radius 12px
+            background rgb(240,20,20)
         .price
           display inline-block
           vertical-align top
@@ -62,6 +86,8 @@
           border-right:1px solid rgba(255,255,255,0.1)
           font-size:16px
           font-weight:700
+          &.hignlight
+            color #fff
         .desc
           display inline-block
           vertical-align top
@@ -71,17 +97,19 @@
       .content-right
         flex 0 0 105px
         width 105px
+        background #2b343c
         .pay
           height 48px
           line-height 48px
           text-align center
           font-size 12px
           font-weight:700
-
+          &.hignlight
+            color #fff
 </style>
 
 <script>
-
+  import {mapGetters} from 'vuex'
     export default{
         props:{
           deliveryPrice:{
@@ -94,6 +122,20 @@
         data(){
             return{
                 msg:'hello vue'
+            }
+        },
+        computed:{
+          ...mapGetters({
+              totalPrice:'totalPrice',
+              totalCount:'totalCount'
+          })
+        },
+        methods:{
+            test(){
+                if (this.totalPrice<=0){
+                    return
+                }
+                console.log(this.totalPrice)
             }
         },
         components:{
