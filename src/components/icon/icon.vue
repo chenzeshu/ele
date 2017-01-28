@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="icon">
     <span class="icon-icon" :class="classMap[icontype]"></span>
   </div>
 </template>

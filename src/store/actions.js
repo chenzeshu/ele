@@ -16,5 +16,8 @@ export const decreaseSelectFoods = ({commit},payload)=>{
   commit(types.DECREASE_SELECT_FOODS,{payload})
 }
 
+export const emptyCount = ({commit})=>{
+  commit(types.EMPTY)
+}
 //todo 记录：内部 commit的参数需要带{}
 //todo 接收端(mutations)的参数payload也带{}，并严格同名

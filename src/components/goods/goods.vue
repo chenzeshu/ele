@@ -20,7 +20,7 @@
         <li v-for="item in goods" class="food-list food-list-hook">
           <h1 class="title">{{item.name}}</h1>
           <ul>
-            <li @click="selectFood(food,$event)" v-for="food in item.foods" class="food-item border-1px">
+            <li v-for="food in item.foods" class="food-item border-1px"  @click="selectFood(food,$event)">
               <div class="icon">
                 <img :src="food.icon">
               </div>
@@ -42,8 +42,13 @@
         </li>
       </ul>
     </div>
-    <shopcart :delivery-price="seller.deliveryPrice"
+
+    <shopcart ref="shopcart"
+      :delivery-price="seller.deliveryPrice"
               :min-price="seller.minPrice"></shopcart>
+
+    <food :food="selectedFood" ref="food"></food>
+
   </div>
 </template>
 
@@ -115,7 +120,7 @@
             color rgb(7,17,27)
           .desc,.extra
             margin-bottom 8px
-            line-height 10px
+            line-height 14px
             font-size 10px
             color rgb(147,153,159)
           .desc
@@ -139,19 +144,21 @@
               text-decoration line-through
           .cartcontrol-wrapper
             position absolute
-            right 18px
-            bottom 18px
+            right 8px
+            bottom -6px
 </style>
 
 <script>
-  //引入vuex
+  //引入vuex及EventBus
   import {mapGetters,mapActions} from 'vuex'
+  import Bus from 'common/js/EventBus'
   //引入JS库
   import BScroll from 'better-scroll'
   //引入组件
   import icon from '../icon/icon'
   import shopcart from '../shopcart/shopcart'
   import cartcontrol from '../cartcontrol/cartcontrol'
+  import food from '../food/food'
   const  ERR_OK = 0
   const  cc = console.log
   export default{
@@ -159,7 +166,8 @@
       return{
         goods:[],
         listHeight:[],
-        scrollY:0
+        scrollY:0,
+        selectedFood:{}
         /**
          * 页面生成->取得数据->得到fooditems的各个区间->BS暴露实时position->得到实时scrollY
          * ->通过scrollY映射区间->得到currentIndex->对应menu高亮
@@ -184,6 +192,12 @@
             this._calculate()
           })
         }
+      })
+
+      Bus.$on('addCartAnimation',el=>{
+          this.$nextTick(()=>{
+              this.$refs.shopcart.drop(el)
+          })
       })
     },
     computed:{
@@ -220,8 +234,12 @@
         if (!event._constructed){
           return
         }
+        this.selectedFood = food
+        this.$refs.food.show()
+
       },
       _initScroll(){
+          //如果还是要用App.vue总览数据，可以用if(!this.menuScroll判断是否已存在scroll实例)
         this.menuScroll = new BScroll(this.$refs.menuWrapper,{
           click:true
         })
@@ -248,7 +266,7 @@
       }
     },
     components:{
-      icon,shopcart,cartcontrol
+      icon,shopcart,cartcontrol,food
     }
   }
 </script>

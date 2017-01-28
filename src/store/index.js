@@ -15,7 +15,7 @@ const state = {
   goods:{
     //food
   },
-  ratings:{}
+  ratings:[]
 }
 
 
